@@ -21,5 +21,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
 
+# Paket pdf 3.12 membatasi archive ke 4.0.9, tetapi image 4.11.0 butuh archive
+# yang lebih baru sehingga build web gagal. Kunci image ke 4.10.1 sampai pdf
+# diperbarui. Jangan dihapus tanpa mengetes `flutter run -d chrome`.
+dependency_overrides:
+  image: 4.10.1
+
 flutter:
   uses-material-design: true
