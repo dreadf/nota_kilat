@@ -65,15 +65,19 @@ class AppValidators {
     return null;
   }
 
-  // Validasi harga harus lebih dari 0.
+  // Validasi harga harus berupa bilangan bulat lebih dari 0.
   static String? validatePrice(String? value) {
     final required = validateRequired(value, fieldName: 'Harga');
 
     if (required != null) return required;
 
-    final price = num.tryParse(value!.trim());
+    final price = int.tryParse(value!.trim(), radix: 10);
 
-    if (price == null || price <= 0) {
+    if (price == null) {
+      return 'Harga harus berupa bilangan bulat';
+    }
+
+    if (price <= 0) {
       return 'Harga harus lebih dari 0';
     }
 
@@ -86,7 +90,7 @@ class AppValidators {
 
     if (required != null) return required;
 
-    final stock = int.tryParse(value!.trim());
+    final stock = int.tryParse(value!.trim(), radix: 10);
 
     if (stock == null || stock < 0) {
       return 'Stok harus berupa bilangan bulat 0 atau lebih';
