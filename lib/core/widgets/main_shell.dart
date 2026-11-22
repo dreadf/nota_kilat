@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../routing/app_routes.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 
 /// The common bottom navigation used by the four primary NotaKilat features.
 ///
@@ -69,7 +71,7 @@ class MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     final index = MainTab.values.indexOf(_selectedTab);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF9),
+      backgroundColor: AppColors.background,
       body: IndexedStack(
         index: index,
         children: [for (final tab in MainTab.values) _screenFor(tab)],
@@ -78,16 +80,18 @@ class MainShellState extends State<MainShell> {
         top: false,
         child: NavigationBarTheme(
           data: NavigationBarThemeData(
-            backgroundColor: Colors.white,
-            indicatorColor: const Color(0xFFE7F3EF),
+            backgroundColor: AppColors.surface,
+            indicatorColor: AppColors.primarySurface,
+            iconTheme: WidgetStateProperty.resolveWith((states) {
+              final selected = states.contains(WidgetState.selected);
+              return IconThemeData(
+                color: selected ? AppColors.primary : AppColors.navInactive,
+              );
+            }),
             labelTextStyle: WidgetStateProperty.resolveWith((states) {
               final selected = states.contains(WidgetState.selected);
-              return TextStyle(
-                color: selected
-                    ? const Color(0xFF176B5B)
-                    : const Color(0xFF7B8985),
-                fontSize: 11,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              return AppTextStyles.navLabel.copyWith(
+                color: selected ? AppColors.primary : AppColors.navInactive,
               );
             }),
           ),
@@ -137,7 +141,7 @@ class _UnconnectedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF9),
+      backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(tab.label)),
       body: Center(
         child: Padding(
@@ -147,7 +151,7 @@ class _UnconnectedTab extends StatelessWidget {
             children: [
               const Icon(
                 Icons.layers_outlined,
-                color: Color(0xFF176B5B),
+                color: AppColors.primary,
                 size: 46,
               ),
               const SizedBox(height: 16),

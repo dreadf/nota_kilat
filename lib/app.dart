@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'core/routing/app_routes.dart';
 import 'core/widgets/main_shell.dart';
+import 'core/theme/app_colors.dart';
 
 /// App-wide configuration, routing and common navigation only.
 ///
@@ -32,16 +33,17 @@ class NotaKilatApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF8FAF9),
+        fontFamily: 'Plus Jakarta Sans',
+        scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF176B5B),
-          primary: const Color(0xFF176B5B),
-          surface: const Color(0xFFF8FAF9),
-          onSurface: const Color(0xFF20342F),
+          seedColor: AppColors.primary,
+          primary: AppColors.primary,
+          surface: AppColors.background,
+          onSurface: AppColors.textPrimary,
         ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFF8FAF9),
-          foregroundColor: Color(0xFF20342F),
+          backgroundColor: AppColors.background,
+          foregroundColor: AppColors.textPrimary,
           centerTitle: false,
         ),
       ),
@@ -90,7 +92,7 @@ class _UnconnectedPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.layers_outlined,
-                  size: 48, color: Color(0xFF176B5B)),
+                  size: 48, color: AppColors.primary),
               const SizedBox(height: 16),
               Text(title, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 8),
