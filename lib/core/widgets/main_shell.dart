@@ -27,13 +27,11 @@ class MainShell extends StatefulWidget {
 
 class MainShellState extends State<MainShell> {
   late MainTab _selectedTab;
-  final Set<MainTab> _visitedTabs = {};
 
   @override
   void initState() {
     super.initState();
     _selectedTab = widget.initialTab;
-    _visitedTabs.add(_selectedTab);
   }
 
   @override
@@ -49,18 +47,16 @@ class MainShellState extends State<MainShell> {
 
     setState(() {
       _selectedTab = tab;
-      _visitedTabs.add(tab);
     });
   }
 
+  /// Layar dibuat ulang saat pindah tab agar datanya dimuat kembali.
   Widget _screenFor(MainTab tab) {
-    // Build each screen after its tab is first visited.
-    if (!_visitedTabs.contains(tab)) return const SizedBox.shrink();
-
     final builder = widget.tabBuilders[tab];
-    if (builder != null) return builder(context);
-
-    return _UnconnectedTab(tab: tab);
+    final screen = builder != null
+        ? builder(context)
+        : _UnconnectedTab(tab: tab);
+    return KeyedSubtree(key: ValueKey(tab), child: screen);
   }
 
   @override
@@ -70,10 +66,7 @@ class MainShellState extends State<MainShell> {
     final index = MainTab.values.indexOf(_selectedTab);
 
     return Scaffold(
-      body: IndexedStack(
-        index: index,
-        children: [for (final tab in MainTab.values) _screenFor(tab)],
-      ),
+      body: _screenFor(_selectedTab),
       bottomNavigationBar: SafeArea(
         top: false,
         child: NavigationBarTheme(
