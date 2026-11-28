@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'core/routing/app_routes.dart';
+import 'core/theme/theme.dart';
 import 'core/widgets/main_shell.dart';
-import 'core/theme/app_colors.dart';
 
 /// App-wide configuration, routing and common navigation only.
 ///
@@ -28,25 +28,12 @@ class NotaKilatApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = MaterialTheme(ThemeData(useMaterial3: true).textTheme);
+
     return MaterialApp(
       title: 'NotaKilat',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: 'Plus Jakarta Sans',
-        scaffoldBackgroundColor: AppColors.background,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          primary: AppColors.primary,
-          surface: AppColors.background,
-          onSurface: AppColors.textPrimary,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.background,
-          foregroundColor: AppColors.textPrimary,
-          centerTitle: false,
-        ),
-      ),
+      theme: theme.light(),
       // Use '/' as Navigator's root to avoid extra synthetic routes when a
       // named preview/start page (for example '/dashboard') is requested.
       initialRoute: Navigator.defaultRouteName,
@@ -55,6 +42,7 @@ class NotaKilatApp extends StatelessWidget {
             ? initialRoute
             : settings.name ?? initialRoute;
         final tab = AppRoutes.tabFor(route);
+
         if (tab != null) {
           return MaterialPageRoute<void>(
             settings: settings,
@@ -64,6 +52,7 @@ class NotaKilatApp extends StatelessWidget {
             ),
           );
         }
+
         final registeredPage = pageBuilders[route];
         return MaterialPageRoute<void>(
           settings: settings,
@@ -83,6 +72,8 @@ class _UnconnectedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = AppRoutes.titleFor(route);
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: Center(
@@ -91,10 +82,13 @@ class _UnconnectedPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.layers_outlined,
-                  size: 48, color: AppColors.primary),
+              Icon(
+                Icons.layers_outlined,
+                size: 48,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(height: 16),
-              Text(title, style: Theme.of(context).textTheme.titleLarge),
+              Text(title, style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               const Text(
                 'Screen belum dihubungkan. Implementasinya tetap dikerjakan '

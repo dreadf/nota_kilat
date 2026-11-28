@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../routing/app_routes.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 
-/// The common bottom navigation used by the four primary NotaKilat features.
-///
-/// Screens from other members are provided through [tabBuilders]. Nothing in
-/// this file imports or modifies their feature folders.
 class MainShell extends StatefulWidget {
   const MainShell({
     super.key,
@@ -18,11 +12,11 @@ class MainShell extends StatefulWidget {
   final MainTab initialTab;
   final Map<MainTab, WidgetBuilder> tabBuilders;
 
-  /// Switch tabs without pushing another MainShell onto the navigation stack.
-  /// Returns false when called outside a MainShell.
+  /// Switches tabs without adding another MainShell to the navigation stack.
   static bool switchTo(BuildContext context, MainTab tab) {
     final shell = context.findAncestorStateOfType<MainShellState>();
     if (shell == null) return false;
+
     shell.selectTab(tab);
     return true;
   }
@@ -52,6 +46,7 @@ class MainShellState extends State<MainShell> {
 
   void selectTab(MainTab tab) {
     if (_selectedTab == tab) return;
+
     setState(() {
       _selectedTab = tab;
       _visitedTabs.add(tab);
@@ -59,19 +54,22 @@ class MainShellState extends State<MainShell> {
   }
 
   Widget _screenFor(MainTab tab) {
-    // A feature page is only created after its tab is visited. This prevents
-    // unused features from loading data when Dashboard first opens.
+    // Build each screen after its tab is first visited.
     if (!_visitedTabs.contains(tab)) return const SizedBox.shrink();
+
     final builder = widget.tabBuilders[tab];
     if (builder != null) return builder(context);
+
     return _UnconnectedTab(tab: tab);
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final index = MainTab.values.indexOf(_selectedTab);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: IndexedStack(
         index: index,
         children: [for (final tab in MainTab.values) _screenFor(tab)],
@@ -80,18 +78,22 @@ class MainShellState extends State<MainShell> {
         top: false,
         child: NavigationBarTheme(
           data: NavigationBarThemeData(
-            backgroundColor: AppColors.surface,
-            indicatorColor: AppColors.primarySurface,
+            backgroundColor: colors.surfaceContainer,
+            indicatorColor: colors.secondaryContainer,
             iconTheme: WidgetStateProperty.resolveWith((states) {
               final selected = states.contains(WidgetState.selected);
               return IconThemeData(
-                color: selected ? AppColors.primary : AppColors.navInactive,
+                color: selected
+                    ? colors.onSecondaryContainer
+                    : colors.onSurfaceVariant,
               );
             }),
             labelTextStyle: WidgetStateProperty.resolveWith((states) {
               final selected = states.contains(WidgetState.selected);
-              return AppTextStyles.navLabel.copyWith(
-                color: selected ? AppColors.primary : AppColors.navInactive,
+              return theme.textTheme.labelSmall?.copyWith(
+                color: selected
+                    ? colors.onSecondaryContainer
+                    : colors.onSurfaceVariant,
               );
             }),
           ),
@@ -131,8 +133,6 @@ class MainShellState extends State<MainShell> {
   }
 }
 
-/// Temporary navigation-only placeholder. NOT a replacement for another
-/// member's actual dashboard / transaction / customer / product screens.
 class _UnconnectedTab extends StatelessWidget {
   const _UnconnectedTab({required this.tab});
 
@@ -140,8 +140,9 @@ class _UnconnectedTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(tab.label)),
       body: Center(
         child: Padding(
@@ -149,14 +150,16 @@ class _UnconnectedTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.layers_outlined,
-                color: AppColors.primary,
                 size: 46,
+                color: theme.colorScheme.primary,
               ),
               const SizedBox(height: 16),
-              Text('Halaman ${tab.label}',
-                  style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Halaman ${tab.label}',
+                style: theme.textTheme.titleLarge,
+              ),
               const SizedBox(height: 8),
               const Text(
                 'Tampilan fitur ini akan dihubungkan dari modul anggota tim.',
