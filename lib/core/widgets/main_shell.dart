@@ -33,13 +33,11 @@ class MainShell extends StatefulWidget {
 
 class MainShellState extends State<MainShell> {
   late MainTab _selectedTab;
-  final Set<MainTab> _visitedTabs = {};
 
   @override
   void initState() {
     super.initState();
     _selectedTab = widget.initialTab;
-    _visitedTabs.add(_selectedTab);
   }
 
   @override
@@ -54,17 +52,18 @@ class MainShellState extends State<MainShell> {
     if (_selectedTab == tab) return;
     setState(() {
       _selectedTab = tab;
-      _visitedTabs.add(tab);
     });
   }
 
+  /// Hanya layar tab yang sedang dipilih yang dibuat. Setiap pindah tab,
+  /// layar dibuat ulang sehingga datanya diambil lagi (daftar selalu terbaru).
+  /// Key membuat Flutter menganggap tiap tab sebagai layar yang berbeda.
   Widget _screenFor(MainTab tab) {
-    // A feature page is only created after its tab is visited. This prevents
-    // unused features from loading data when Dashboard first opens.
-    if (!_visitedTabs.contains(tab)) return const SizedBox.shrink();
     final builder = widget.tabBuilders[tab];
-    if (builder != null) return builder(context);
-    return _UnconnectedTab(tab: tab);
+    final screen = builder != null
+        ? builder(context)
+        : _UnconnectedTab(tab: tab);
+    return KeyedSubtree(key: ValueKey(tab), child: screen);
   }
 
   @override
@@ -72,10 +71,7 @@ class MainShellState extends State<MainShell> {
     final index = MainTab.values.indexOf(_selectedTab);
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: IndexedStack(
-        index: index,
-        children: [for (final tab in MainTab.values) _screenFor(tab)],
-      ),
+      body: _screenFor(_selectedTab),
       bottomNavigationBar: SafeArea(
         top: false,
         child: NavigationBarTheme(
@@ -155,8 +151,10 @@ class _UnconnectedTab extends StatelessWidget {
                 size: 46,
               ),
               const SizedBox(height: 16),
-              Text('Halaman ${tab.label}',
-                  style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Halaman ${tab.label}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 8),
               const Text(
                 'Tampilan fitur ini akan dihubungkan dari modul anggota tim.',

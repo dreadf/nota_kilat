@@ -10,4 +10,6 @@ abstract final class AppColors {
   static const inputBorder = Color(0xFFE3E9E7);
   static const navInactive = Color(0xFF899691);
   static const onPrimaryMuted = Color(0xB3FFFFFF);
+  static const danger = Color(0xFFD64545);
+  static const inputHint = Color(0xFFB4BDBA);
 }
