@@ -25,6 +25,9 @@ class ServiceException implements Exception {
 Future<T> runSupabase<T>(Future<T> Function() action) async {
   try {
     return await action();
+  } on ServiceException {
+    // Sudah berupa pesan siap tampil (misalnya dari validasi di service).
+    rethrow;
   } on PostgrestException catch (e) {
     // Error dari database atau fungsi RPC (contoh: stok tidak cukup).
     throw ServiceException(e.message);
